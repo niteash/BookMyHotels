@@ -1,0 +1,39 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="row mt-3">
+  <h3 class="col-6 offset-3">Login on BookMyHotels</h3>
+  <div class="col-6 offset-3">
+    <form action="/login" method="POST" class="needs-validation" novalidate>
+      
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input
+          class="form-control"
+          required
+          id="username"
+          type="text"
+          name="username"
+        >
+        <div class="invalid-feedback">
+          Please enter your username!
+        </div>
+      </div>
+      
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input
+          class="form-control"
+          required
+          id="password"
+          type="password"
+          name="password"
+        >
+        <div class="invalid-feedback">
+          Please enter your password!
+        </div>
+      </div>
+      
+      <button type="submit" class="btn btn-success">Login</button>
+    </form>
+  </div>
+</div>

@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV != "production") {
+  require("dotenv").config();
+}
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -10,6 +14,7 @@ const Review = require("./models/review");
 const review = require("./models/review");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -24,7 +29,9 @@ const UserRouter = require("./routes/user.js");
 const { serialize, deserialize } = require("v8");
 const user = require("./models/user.js");
 //connecting db  (2nd step)
-const MONGO_URL = "mongodb://127.0.0.1:27017/bookMyHotels";
+
+
+const dbURL = process.env.ATLASDB_URL;
 
 main()
   .then(() => {
@@ -34,7 +41,7 @@ main()
     console.log("Error");
   });
 async function main() {
-  mongoose.connect(MONGO_URL);
+  mongoose.connect(dbURL);
 }
 
 //ejs
@@ -47,22 +54,39 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.engine("ejs", ejsMate);
 //method Override
 app.use(methodOverride("_method"));
+
+//connect-mongo
+
+const store = MongoStore.create({
+  mongoUrl: dbURL,
+  crypto: {
+    secret: process.env.SECRET
+  },
+  touchAfter: 24 * 3600,
+});
+
+store.on("error", () => {
+  console.log("ERROR in MONGO SESSION STORE", err);
+});
+
 //session
 const sectionOption = {
-  secret: "mysuperSecretCode",
+  store,
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true, 
+    httpOnly: true,
   },
 };
-app.get("/", (req, res) => {
-  res.send("Welcome to Home");
-});
+// app.get("/", (req, res) => {
+//   res.send("Welcome to Home");
+// });
 
 app.use(session(sectionOption));
+
 //flash
 app.use(flash());
 //passport

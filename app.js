@@ -28,6 +28,9 @@ const UserRouter = require("./routes/user.js");
 
 const { serialize, deserialize } = require("v8");
 const user = require("./models/user.js");
+
+const ListingController = require("./controllers/listings.js");
+
 //connecting db  (2nd step)
 
 
@@ -81,11 +84,11 @@ const sectionOption = {
     httpOnly: true,
   },
 };
-// app.get("/", (req, res) => {
-//   res.send("Welcome to Home");
-// });
+
 
 app.use(session(sectionOption));
+
+
 
 //flash
 app.use(flash());
@@ -103,6 +106,9 @@ app.use((req, res, next) => {
   res.locals.currUser = req.user;
   next();
 });
+
+app.get('/', ListingController.indexRoute)
+
 
 // app.get('/demoUser', async (req, res)=>{
 //      let fakeUser = new User({
